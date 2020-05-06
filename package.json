@@ -1,0 +1,23 @@
+{
+  "name": "refactoring",
+  "version": "1.0.0",
+  "description": "Refactorings based on Martin Fowler Book",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha **/*.spec.js --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RaphaDeveloper/Refactoring.git"
+  },
+  "author": "Raphael Silva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RaphaDeveloper/Refactoring/issues"
+  },
+  "homepage": "https://github.com/RaphaDeveloper/Refactoring#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.1.2"
+  }
+}
