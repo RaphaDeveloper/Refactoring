@@ -1,23 +1,17 @@
 class InvoiceReportGenerator {
     static generateReport(invoiceData, plays) {
-        let totalAmount = 0;
-        let volumeCredits = 0;
-        let report = `Statement for ${invoiceData.customer}\n`;
+        const invoice = new Invoice(invoiceData, plays);
+        let report = `Statement for ${invoice.customer}\n`;
         const format = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format;
         
-        const invoice = new Invoice(invoiceData, plays);
-
         for (let performance of invoice.performances) {
             let performanceAmount = performance.calculateAmount();
-            
-            volumeCredits += performance.calculateVolumeCredits();
-            totalAmount += performanceAmount;
             
             report += `  ${performance.play.name}: ${format(performanceAmount)} (${performance.audience} seats)\n`;               
         }
 
-        report += `Amount owed is ${format(totalAmount)}\n`;
-        report += `You earned ${volumeCredits} credits\n`;
+        report += `Amount owed is ${format(invoice.calculateTotalAmount())}\n`;
+        report += `You earned ${invoice.calculateVolumeCredits()} credits\n`;
         return report;
     }
 }
@@ -26,6 +20,24 @@ class Invoice {
     constructor(invoiceData, plays) {
         this.customer = invoiceData.customer;
         this.performances = invoiceData.performances.map(p => new Performance(p, plays));
+    }
+
+    calculateTotalAmount() {
+        let totalAmount = 0;
+
+        for (let performance of this.performances)
+            totalAmount += performance.calculateAmount();
+
+        return totalAmount;
+    }
+
+    calculateVolumeCredits() {
+        let volumeCredits = 0;
+
+        for (let performance of this.performances)
+            volumeCredits += performance.calculateVolumeCredits();
+
+        return volumeCredits;
     }
 }
 
