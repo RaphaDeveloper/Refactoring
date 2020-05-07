@@ -1,18 +1,44 @@
 class InvoiceReportGenerator {
     generateReport(invoiceData, plays) {
         const invoice = new Invoice(invoiceData, plays);
-        let report = `Statement for ${invoice.customer}\n`;
-        const format = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format;
         
-        for (let performance of invoice.performances) {
-            let performanceAmount = performance.calculateAmount();
-            
-            report += `  ${performance.play.name}: ${format(performanceAmount)} (${performance.audience} seats)\n`;               
-        }
-
-        report += `Amount owed is ${format(invoice.calculateTotalAmount())}\n`;
-        report += `You earned ${invoice.calculateVolumeCredits()} credits\n`;
+        let report = this.renderCustomer(invoice);
+        report += this.renderPerformances(invoice);
+        report += this.renderTotalAmount(invoice);
+        report += this.renderVolumeCredits(invoice);
+        
         return report;
+    }
+
+    renderCustomer(invoice) {
+        return `Statement for ${invoice.customer}\n`;
+    }
+
+    renderPerformances(invoice) {
+        let performances = '';
+
+        for (let performance of invoice.performances)
+            performances += this.renderPerformance(performance);
+
+        return performances;
+    }
+
+    renderPerformance(performance) {
+        return `  ${performance.play.name}: ${this.formatValue(performance.calculateAmount())} (${performance.audience} seats)\n`;
+    }
+
+    renderTotalAmount(invoice) {
+        return `Amount owed is ${this.formatValue(invoice.calculateTotalAmount())}\n`;
+    }
+
+    renderVolumeCredits(invoice) {
+        return `You earned ${invoice.calculateVolumeCredits()} credits\n`;
+    }
+
+    formatValue(value) {
+        const format = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format;
+
+        return format(value);
     }
 }
 
