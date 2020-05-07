@@ -17,11 +17,10 @@ class InvoiceReportGenerator {
                     }
                     break;
                 case "comedy":
-                    performanceAmount = 300;
+                    performanceAmount = 300 + 3 * performance.audience;
                     if (performance.audience > 20) {
                         performanceAmount += 100 + 5 * (performance.audience - 20);
                     }
-                    performanceAmount += 3 * performance.audience;
                     break;
                 default:
                     throw new Error(`unknown type: ${play.type}`);
