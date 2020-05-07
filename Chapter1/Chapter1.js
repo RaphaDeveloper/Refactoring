@@ -1,44 +1,65 @@
 class InvoiceReportGenerator {
-    static generateReport(invoice, plays) {
+    static generateReport(invoiceData, plays) {
         let totalAmount = 0;
         let volumeCredits = 0;
-        let report = `Statement for ${invoice.customer}\n`;
+        let report = `Statement for ${invoiceData.customer}\n`;
         const format = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format;
+        
+        const invoice = new Invoice(invoiceData, plays);
 
         for (let performance of invoice.performances) {
-            const play = plays[performance.playID];
-            let performanceAmount = 0;
-
-            switch (play.type) {
-                case "tragedy":
-                    performanceAmount = 400;
-                    if (performance.audience > 30) {
-                        performanceAmount += 10 * (performance.audience - 30);
-                    }
-                    break;
-                case "comedy":
-                    performanceAmount = 300 + 3 * performance.audience;
-                    if (performance.audience > 20) {
-                        performanceAmount += 100 + 5 * (performance.audience - 20);
-                    }
-                    break;
-                default:
-                    throw new Error(`unknown type: ${play.type}`);
-            }
-
-            // add volume credits    
-            volumeCredits += Math.max(performance.audience - 30, 0);
-            // add extra credit for every ten comedy attendees    
-            if ("comedy" === play.type)
-                volumeCredits += Math.floor(performance.audience / 5);
-
-            // print line for this order    
-            report += `  ${play.name}: ${format(performanceAmount)} (${performance.audience} seats)\n`;
+            let performanceAmount = performance.calculateAmount();
+            
+            volumeCredits += performance.calculateVolumeCredits();
             totalAmount += performanceAmount;
+            
+            report += `  ${performance.play.name}: ${format(performanceAmount)} (${performance.audience} seats)\n`;               
         }
+
         report += `Amount owed is ${format(totalAmount)}\n`;
         report += `You earned ${volumeCredits} credits\n`;
         return report;
+    }
+}
+
+class Invoice {
+    constructor(invoiceData, plays) {
+        this.customer = invoiceData.customer;
+        this.performances = invoiceData.performances.map(p => new Performance(p, plays));
+    }
+}
+
+class Performance {
+    constructor(performance, plays) {
+        this.play = plays[performance.playID];
+        this.audience = performance.audience;
+    }
+
+    calculateAmount() {
+        let amount = 0;
+
+        if (this.play.type === 'tragedy') {
+            amount = 400;
+            if (this.audience > 30) {
+                amount += 10 * (this.audience - 30);
+            }
+        } else if (this.play.type === 'comedy') {
+            amount = 300 + 3 * this.audience;
+            if (this.audience > 20) {
+                amount += 100 + 5 * (this.audience - 20);
+            }
+        }
+
+        return amount;
+    }
+
+    calculateVolumeCredits() {
+        let volumeCredits = Math.max(this.audience - 30, 0);
+        
+        if ("comedy" === this.play.type)
+            volumeCredits += Math.floor(this.audience / 5);
+
+        return volumeCredits;
     }
 }
 
