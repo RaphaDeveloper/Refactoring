@@ -11,17 +11,17 @@ class InvoiceReportGenerator {
 
             switch (play.type) {
                 case "tragedy":
-                    performanceAmount = 40000;
+                    performanceAmount = 400;
                     if (performance.audience > 30) {
-                        performanceAmount += 1000 * (performance.audience - 30);
+                        performanceAmount += 10 * (performance.audience - 30);
                     }
                     break;
                 case "comedy":
-                    performanceAmount = 30000;
+                    performanceAmount = 300;
                     if (performance.audience > 20) {
-                        performanceAmount += 10000 + 500 * (performance.audience - 20);
+                        performanceAmount += 100 + 5 * (performance.audience - 20);
                     }
-                    performanceAmount += 300 * performance.audience;
+                    performanceAmount += 3 * performance.audience;
                     break;
                 default:
                     throw new Error(`unknown type: ${play.type}`);
@@ -34,10 +34,10 @@ class InvoiceReportGenerator {
                 volumeCredits += Math.floor(performance.audience / 5);
 
             // print line for this order    
-            report += `  ${play.name}: ${format(performanceAmount / 100)} (${performance.audience} seats)\n`;
+            report += `  ${play.name}: ${format(performanceAmount)} (${performance.audience} seats)\n`;
             totalAmount += performanceAmount;
         }
-        report += `Amount owed is ${format(totalAmount / 100)}\n`;
+        report += `Amount owed is ${format(totalAmount)}\n`;
         report += `You earned ${volumeCredits} credits\n`;
         return report;
     }
