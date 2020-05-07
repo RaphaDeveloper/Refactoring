@@ -24,7 +24,7 @@ class InvoiceReportGenerator {
     }
 
     renderPerformance(performance) {
-        return `  ${performance.play.name}: ${this.formatValue(performance.calculateAmount())} (${performance.audience} seats)\n`;
+        return `  ${performance.name}: ${this.formatValue(performance.calculateAmount())} (${performance.audience} seats)\n`;
     }
 
     renderTotalAmount(invoice) {
@@ -45,7 +45,7 @@ class InvoiceReportGenerator {
 class Invoice {
     constructor(invoiceData, plays) {
         this.customer = invoiceData.customer;
-        this.performances = invoiceData.performances.map(p => new Performance(p, plays));
+        this.performances = invoiceData.performances.map(p => PerformanceFactory.create(p, plays));
     }
 
     calculateTotalAmount() {
@@ -67,37 +67,58 @@ class Invoice {
     }
 }
 
-class Performance {
-    constructor(performance, plays) {
-        this.play = plays[performance.playID];
+class PerformanceFactory {
+    static create(performance, plays) {
+        const play = plays[performance.playID];
+
+        switch (play.type) {
+            case "tragedy":
+                return new TragedyPerformance(performance, play);
+            case "comedy":
+                return new ComedyPerformance(performance, play);
+            default:
+                throw new Error(`unknown type: ${play.type}`);    
+        } 
+    }
+}
+
+class TragedyPerformance {
+    constructor(performance, play) {
+        this.name = play.name;
         this.audience = performance.audience;
     }
 
     calculateAmount() {
-        let amount = 0;
+        let amount = 400;
 
-        if (this.play.type === 'tragedy') {
-            amount = 400;
-            if (this.audience > 30) {
-                amount += 10 * (this.audience - 30);
-            }
-        } else if (this.play.type === 'comedy') {
-            amount = 300 + 3 * this.audience;
-            if (this.audience > 20) {
-                amount += 100 + 5 * (this.audience - 20);
-            }
-        }
+        if (this.audience > 30)
+            amount += 10 * (this.audience - 30);
 
         return amount;
     }
 
     calculateVolumeCredits() {
-        let volumeCredits = Math.max(this.audience - 30, 0);
-        
-        if ("comedy" === this.play.type)
-            volumeCredits += Math.floor(this.audience / 5);
+        return Math.max(this.audience - 30, 0);
+    }
+}
 
-        return volumeCredits;
+class ComedyPerformance {
+    constructor(performance, play) {
+        this.name = play.name;
+        this.audience = performance.audience;
+    }
+
+    calculateAmount() {
+        let amount = 300 + 3 * this.audience;
+        
+        if (this.audience > 20)
+            amount += 100 + 5 * (this.audience - 20);
+
+        return amount;
+    }
+
+    calculateVolumeCredits() {
+        return Math.max(this.audience - 30, 0) + Math.floor(this.audience / 5);
     }
 }
 
