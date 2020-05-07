@@ -3,7 +3,9 @@
 const expect = require("chai").expect;
 const InvoiceReportGenerator = require('./Chapter1').InvoiceReportGenerator;
 
-describe('statement', function() {
+describe('InvoiceReportGenerator', function() {
+  const reportGenerator = new InvoiceReportGenerator();
+
   it('should create the report', function() {
     let expectedReport = 'Statement for BigCo\n';
     expectedReport += '  Hamlet: $650.00 (55 seats)\n';
@@ -36,7 +38,7 @@ describe('statement', function() {
       ]
     };
 
-    const report = InvoiceReportGenerator.generateReport(invoice, plays);
+    const report = reportGenerator.generateReport(invoice, plays);
 
     expect(report).to.equal(expectedReport);
   });

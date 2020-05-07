@@ -1,5 +1,5 @@
 class InvoiceReportGenerator {
-    static generateReport(invoiceData, plays) {
+    generateReport(invoiceData, plays) {
         const invoice = new Invoice(invoiceData, plays);
         let report = `Statement for ${invoice.customer}\n`;
         const format = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format;
