@@ -1,16 +1,16 @@
 'use strict';
 
 const expect = require("chai").expect;
-const statement = require('./Chapter1').statement;
+const InvoiceReportGenerator = require('./Chapter1').InvoiceReportGenerator;
 
 describe('statement', function() {
   it('should create the report', function() {
-    let expectedResult = 'Statement for BigCo\n';
-    expectedResult += '  Hamlet: $650.00 (55 seats)\n';
-    expectedResult += '  As You Like It: $580.00 (35 seats)\n';
-    expectedResult += '  Othello: $400.00 (25 seats)\n';
-    expectedResult += 'Amount owed is $1,630.00\n';
-    expectedResult += 'You earned 37 credits\n';
+    let expectedReport = 'Statement for BigCo\n';
+    expectedReport += '  Hamlet: $650.00 (55 seats)\n';
+    expectedReport += '  As You Like It: $580.00 (35 seats)\n';
+    expectedReport += '  Othello: $400.00 (25 seats)\n';
+    expectedReport += 'Amount owed is $1,630.00\n';
+    expectedReport += 'You earned 37 credits\n';
 
     const plays = {
       "hamlet": {"name": "Hamlet", "type": "tragedy"},
@@ -36,8 +36,8 @@ describe('statement', function() {
       ]
     };
 
-    const result = statement(invoice, plays);
+    const report = InvoiceReportGenerator.generateReport(invoice, plays);
 
-    expect(result).to.equal(expectedResult);
+    expect(report).to.equal(expectedReport);
   });
 });
